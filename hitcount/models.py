@@ -55,7 +55,7 @@ class HitManager(models.Manager):
         hours, and weeks.  It's creating a datetime.timedelta object.
         '''
         grace = getattr(settings, 'HITCOUNT_KEEP_HIT_ACTIVE', {'days':7})
-        period = datetime.datetime.utcnow() - datetime.timedelta(**grace)
+        period = datetime.datetime.now() - datetime.timedelta(**grace)
         queryset = self.get_query_set()
         queryset = queryset.filter(created__gte=period)
         return queryset.filter(*args, **kwargs)
@@ -69,7 +69,7 @@ class HitCount(models.Model):
 
     '''
     hits            = models.PositiveIntegerField(default=0)
-    modified        = models.DateTimeField(default=datetime.datetime.utcnow)
+    modified        = models.DateTimeField(default=datetime.datetime.now)
     content_type    = models.ForeignKey(ContentType,
                         verbose_name="content type",
                         related_name="content_type_set_for_%(class)s",)
@@ -89,7 +89,7 @@ class HitCount(models.Model):
         return u'%s' % self.content_object
 
     def save(self, *args, **kwargs):
-        self.modified = datetime.datetime.utcnow()
+        self.modified = datetime.datetime.now()
 
         super(HitCount, self).save(*args, **kwargs)
 
@@ -108,7 +108,7 @@ class HitCount(models.Model):
         hours, and weeks.  It's creating a datetime.timedelta object.
         '''
         assert kwargs, "Must provide at least one timedelta arg (eg, days=1)"
-        period = datetime.datetime.utcnow() - datetime.timedelta(**kwargs)
+        period = datetime.datetime.now() - datetime.timedelta(**kwargs)
         return self.hit_set.filter(created__gte=period).count()
 
     def get_content_object_url(self):
@@ -157,7 +157,7 @@ class Hit(models.Model):
         if not self.created:
             self.hitcount.hits = F('hits') + 1
             self.hitcount.save()
-            self.created = datetime.datetime.utcnow()
+            self.created = datetime.datetime.now()
 
         super(Hit, self).save(*args, **kwargs)
 
