@@ -69,7 +69,7 @@ class HitCount(models.Model):
 
     '''
     hits            = models.PositiveIntegerField(default=0)
-    modified        = models.DateTimeField(default=datetime.datetime.now)
+    modified        = models.DateTimeField(auto_now=True)
     content_type    = models.ForeignKey(ContentType,
                         verbose_name="content type",
                         related_name="content_type_set_for_%(class)s",)
@@ -87,11 +87,6 @@ class HitCount(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.content_object
-
-    def save(self, *args, **kwargs):
-        self.modified = datetime.datetime.now()
-
-        super(HitCount, self).save(*args, **kwargs)
 
     def hits_in_last(self, **kwargs):
         '''
@@ -134,7 +129,7 @@ class Hit(models.Model):
 
     It could get rather large.
     '''
-    created         = models.DateTimeField(editable=False)
+    created         = models.DateTimeField(editable=False, auto_now_add=True)
     ip              = models.CharField(max_length=40, editable=False)
     session         = models.CharField(max_length=40, editable=False)
     user_agent      = models.CharField(max_length=255, editable=False)
@@ -157,7 +152,6 @@ class Hit(models.Model):
         if not self.created:
             self.hitcount.hits = F('hits') + 1
             self.hitcount.save()
-            self.created = datetime.datetime.now()
 
         super(Hit, self).save(*args, **kwargs)
 
