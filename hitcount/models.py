@@ -30,13 +30,6 @@ def delete_hit_count_callback(sender, instance,
 
 delete_hit_count.connect(delete_hit_count_callback)
 
-
-# EXCEPTIONS #
-
-class DuplicateContentObject(Exception):
-    'If content_object already exists for this model'
-    pass
-
 # MANAGERS #
 
 class HitManager(models.Manager):
@@ -97,23 +90,6 @@ class HitCount(models.Model):
 
     def save(self, *args, **kwargs):
         self.modified = datetime.datetime.utcnow()
-
-        if not self.pk and self.object_pk and self.content_type:
-            # Because we are using a models.TextField() for `object_pk` to
-            # allow *any* primary key type (integer or text), we
-            # can't use `unique_together` or `unique=True` to gaurantee
-            # that only one HitCount object exists for a given object.
-            #
-            # This is just a simple hack - if there is no `self.pk`
-            # set, it checks the database once to see if the `content_type`
-            # and `object_pk` exist together (uniqueness).  Obviously, this
-            # is not fool proof - if someone sets their own `id` or `pk` 
-            # when initializing the HitCount object, we could get a duplicate.
-            if HitCount.objects.filter(
-                    object_pk=self.object_pk).filter(
-                            content_type=self.content_type):
-                raise DuplicateContentObject, "A HitCount object already " + \
-                        "exists for this content_object."
 
         super(HitCount, self).save(*args, **kwargs)
 
