@@ -80,7 +80,7 @@ class HitCount(models.Model):
     content_type    = models.ForeignKey(ContentType,
                         verbose_name="content type",
                         related_name="content_type_set_for_%(class)s",)
-    object_pk       = models.TextField('object ID')
+    object_pk       = models.IntegerField('object ID')
     content_object  = generic.GenericForeignKey('content_type', 'object_pk')
 
     class Meta:
@@ -88,6 +88,7 @@ class HitCount(models.Model):
         #unique_together = (("content_type", "object_pk"),)
         get_latest_by = "modified"
         db_table = "hitcount_hit_count"
+        unique_together = ("content_type", "object_pk")
         verbose_name = "Hit Count"
         verbose_name_plural = "Hit Counts"
 
