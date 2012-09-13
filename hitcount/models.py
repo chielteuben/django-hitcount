@@ -32,6 +32,11 @@ delete_hit_count.connect(delete_hit_count_callback)
 
 # MANAGERS #
 
+class HitCountManager(models.Manager):
+    def get_for_object(self, obj):
+        ctype = ContentType.objects.get_for_model(obj)
+        return self.get_or_create(content_type=ctype, object_pk=obj.pk)[0]
+
 class HitManager(models.Manager):
 
     def filter_active(self, *args, **kwargs):
@@ -75,6 +80,8 @@ class HitCount(models.Model):
                         related_name="content_type_set_for_%(class)s",)
     object_pk       = models.IntegerField('object ID')
     content_object  = generic.GenericForeignKey('content_type', 'object_pk')
+
+    objects         = HitCountManager()
 
     class Meta:
         ordering = ( '-hits', )
