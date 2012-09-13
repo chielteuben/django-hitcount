@@ -78,10 +78,9 @@ class HitCount(models.Model):
 
     class Meta:
         ordering = ( '-hits', )
-        #unique_together = (("content_type", "object_pk"),)
+        unique_together = (("content_type", "object_pk"),)
         get_latest_by = "modified"
         db_table = "hitcount_hit_count"
-        unique_together = ("content_type", "object_pk")
         verbose_name = "Hit Count"
         verbose_name_plural = "Hit Counts"
 
