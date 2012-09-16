@@ -101,12 +101,15 @@ def update_hit_count_ajax(request):
     except:
         return HttpResponseBadRequest("HitCount object_pk not working")
 
+    old_hits = hitcount.hits
     result = _update_hit_count(request, hitcount)
 
+    resp = {}
     if result:
-        status = "success"
+        resp['status'] = "success"
+        resp['hits'] = old_hits + 1
     else:
-        status = "no hit recorded"
+        resp['status'] = "no hit recorded"
 
-    json = simplejson.dumps({'status': status})
+    json = simplejson.dumps(resp)
     return HttpResponse(json,mimetype="application/json")
