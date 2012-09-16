@@ -10,6 +10,7 @@ from django.contrib.contenttypes import generic
 
 from django.dispatch import Signal
 
+from django.utils import timezone
 
 # SIGNALS #
 
@@ -60,7 +61,7 @@ class HitManager(models.Manager):
         hours, and weeks.  It's creating a datetime.timedelta object.
         '''
         grace = getattr(settings, 'HITCOUNT_KEEP_HIT_ACTIVE', {'days':7})
-        period = datetime.datetime.now() - datetime.timedelta(**grace)
+        period = timezone.now() - datetime.timedelta(**grace)
         queryset = self.get_query_set()
         queryset = queryset.filter(created__gte=period)
         return queryset.filter(*args, **kwargs)
@@ -109,7 +110,7 @@ class HitCount(models.Model):
         hours, and weeks.  It's creating a datetime.timedelta object.
         '''
         assert kwargs, "Must provide at least one timedelta arg (eg, days=1)"
-        period = datetime.datetime.now() - datetime.timedelta(**kwargs)
+        period = timezone.now() - datetime.timedelta(**kwargs)
         return self.hit_set.filter(created__gte=period).count()
 
     def get_content_object_url(self):
