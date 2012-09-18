@@ -136,7 +136,7 @@ class Hit(models.Model):
 
     It could get rather large.
     '''
-    created         = models.DateTimeField(editable=False, auto_now_add=True)
+    created         = models.DateTimeField(editable=False, auto_now_add=True, db_index=True)
     ip              = models.CharField(max_length=40, editable=False)
     session         = models.CharField(max_length=40, editable=False)
     user_agent      = models.CharField(max_length=255, editable=False)
