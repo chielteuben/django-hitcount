@@ -1,8 +1,7 @@
 from django.conf import settings
-import re
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_ipv46_address
 
-# this is not intended to be an all-knowing IP address regex
-IP_RE = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
 
 def get_ip(request):
     """
@@ -23,14 +22,8 @@ def get_ip(request):
     if ip_address:
         # make sure we have one and only one IP
         try:
-            ip_address = IP_RE.match(ip_address)
-            if ip_address:
-                ip_address = ip_address.group(0)
-            else:
-                # no IP, probably from some dirty proxy or other device
-                # throw in some bogus IP
-                ip_address = '10.0.0.1'
-        except IndexError:
-            pass
+            validate_ipv46_address(ip_address)
+        except ValidationError:
+            ip_address = '10.0.0.1'
 
     return ip_address
