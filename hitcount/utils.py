@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.validators import validate_ipv46_address
+from django.core.validators import validate_ipv4_address, validate_ipv6_address
 
 
 def get_ip(request):
@@ -22,8 +22,11 @@ def get_ip(request):
     if ip_address:
         # make sure we have one and only one IP
         try:
-            validate_ipv46_address(ip_address)
+            validate_ipv4_address(ip_address)
         except ValidationError:
-            ip_address = '10.0.0.1'
+            try:
+                validate_ipv6_address(ip_address)
+            except ValidationError:
+                ip_address = '10.0.0.1'
 
     return ip_address
