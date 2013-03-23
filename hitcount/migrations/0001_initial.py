@@ -4,6 +4,12 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+try:
+    from django.conf import settings
+    AUTH_USER_MODEL = settings.AUTH_USER_MODEL
+except AttributeError:
+    AUTH_USER_MODEL = 'auth.User'
+
 
 class Migration(SchemaMigration):
 
@@ -28,7 +34,7 @@ class Migration(SchemaMigration):
             ('ip', self.gf('django.db.models.fields.CharField')(max_length=40)),
             ('session', self.gf('django.db.models.fields.CharField')(max_length=40)),
             ('user_agent', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm[AUTH_USER_MODEL], null=True)),
             ('hitcount', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['hitcount.HitCount'])),
         ))
         db.send_create_signal('hitcount', ['Hit'])
@@ -79,8 +85,8 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
+        AUTH_USER_MODEL: {
+            'Meta': {'object_name': AUTH_USER_MODEL.split('.')[-1]},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
@@ -119,7 +125,7 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'ip': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'session': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['%s']" % AUTH_USER_MODEL, 'null': 'True'}),
             'user_agent': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'hitcount.hitcount': {
